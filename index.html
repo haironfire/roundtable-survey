@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>AEC AI Roundtable: AI Activity Inventory</title>
+<style>
+:root{
+  --navy:#2c5283;--blue:#3881c3;--teal:#309795;--green:#27674a;--gray:#6d6e70;
+  --ink:#2d2d2d;--bg:#f6f8fb;--surface:#ffffff;--tint:#dce6f1;--line:#dce6f1;--soft:#eef3f9;
+  --sel:#2c5283;--selink:#ffffff;--learn:#27674a;
+  color-scheme:light;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --navy:#9cbde6;--blue:#7fb0e0;--teal:#55c2bf;--green:#6cc79c;--gray:#a3adb8;
+    --ink:#e7edf4;--bg:#111821;--surface:#18222e;--tint:#24344a;--line:#2a3a4e;--soft:#1e2a38;
+    --sel:#55c2bf;--selink:#0e1a1a;--learn:#6cc79c;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --navy:#9cbde6;--blue:#7fb0e0;--teal:#55c2bf;--green:#6cc79c;--gray:#a3adb8;
+  --ink:#e7edf4;--bg:#111821;--surface:#18222e;--tint:#24344a;--line:#2a3a4e;--soft:#1e2a38;
+  --sel:#55c2bf;--selink:#0e1a1a;--learn:#6cc79c;color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 16px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,"Times New Roman",serif;font-size:17px;line-height:1.55}
+h1,h2,h3,.ui,button,input,select,textarea,label{font-family:"Trebuchet MS","Segoe UI",Helvetica,Arial,sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 20px 80px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:2px solid var(--teal);padding-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px;color:var(--ink);font-family:"Trebuchet MS",sans-serif;font-size:21px}
+.brand svg{width:40px;height:40px}
+.ownerbtn{display:none}
+.hero{padding:34px 0 10px;max-width:760px}
+.hero h1{font-size:clamp(28px,4.4vw,42px);line-height:1.12;color:var(--navy);margin:0 0 14px;font-weight:700;letter-spacing:-.01em}
+.hero p{margin:0 0 10px;color:var(--ink)}
+.hero .meta{color:var(--gray);font-size:15px}
+.legend{margin:22px 0 0;display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:var(--gray)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.layout{display:grid;grid-template-columns:230px 1fr;gap:36px;margin-top:30px}
+/* the climb rail */
+.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 18px);align-self:start}
+.rail ol{list-style:none;margin:0;padding:0;position:relative}
+.rail ol::before{content:"";position:absolute;left:9px;top:12px;bottom:12px;width:2px;background:var(--line)}
+.rail li{position:relative}
+.rail a{display:flex;gap:12px;align-items:flex-start;text-decoration:none;color:var(--gray);padding:7px 0;font-family:"Trebuchet MS",sans-serif;font-size:14px;line-height:1.3}
+.rail a:hover .rl{color:var(--navy)}
+.node{flex:none;width:20px;height:20px;border-radius:50%;background:var(--surface);border:2px solid var(--line);position:relative;z-index:1;margin-top:-1px;transition:background .2s,border-color .2s}
+.node.part{border-color:var(--teal);background:linear-gradient(var(--surface),var(--surface)) padding-box}
+.node.part::after{content:"";position:absolute;inset:4px;border-radius:50%;background:var(--teal)}
+.node.done{background:var(--teal);border-color:var(--teal)}
+.rl b{display:block;color:var(--ink);font-weight:600}
+.rl small{font-size:12px}
+.rail .total{margin-top:16px;font-family:"Trebuchet MS",sans-serif;font-size:13px;color:var(--gray)}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--teal);width:0;transition:width .3s}
+/* sections */
+section.sec{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin-bottom:26px;scroll-margin-top:16px}
+.sechead{padding:22px 24px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;align-items:flex-end;flex-wrap:wrap}
+.sechead h2{margin:0;font-size:22px;color:var(--navy)}
+.sechead p{margin:6px 0 0;color:var(--gray);font-size:15px;max-width:620px}
+.lvl{font-family:"Trebuchet MS",sans-serif;font-size:13px;color:var(--teal);font-weight:700;margin-bottom:4px}
+.fillbtn{background:none;border:1px solid var(--line);color:var(--gray);border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer}
+.fillbtn:hover{border-color:var(--navy);color:var(--navy)}
+.item{display:grid;grid-template-columns:1fr auto;gap:10px 18px;padding:14px 24px;border-bottom:1px solid var(--line);align-items:center}
+.item:last-child{border-bottom:0}
+.item:nth-child(even){background:var(--soft)}
+.it b{font-family:"Trebuchet MS",sans-serif;font-weight:600;font-size:16px;display:block;line-height:1.3}
+.it span{color:var(--gray);font-size:14px;line-height:1.4;display:block;margin-top:2px}
+.ctl{display:flex;align-items:center;gap:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;color:var(--gray);padding:7px 10px;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:74px;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button:hover{color:var(--navy);background:var(--soft)}
+.dots{display:flex;gap:3px;height:7px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.seg button[aria-pressed="true"]{background:var(--sel);color:var(--selink)}
+.seg button[aria-pressed="true"] .dots i.on{background:var(--selink)}
+.seg button[aria-pressed="true"] .dots i{background:color-mix(in srgb,var(--selink) 35%,transparent)}
+.dots i.on{background:var(--teal)}
+.learn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--gray);cursor:pointer;white-space:nowrap;user-select:none}
+.learn input{accent-color:var(--learn);width:17px;height:17px;margin:0}
+.learn:has(input:checked){color:var(--learn);font-weight:600}
+.scope{grid-column:2;justify-self:end;display:flex;align-items:center;gap:10px;font-family:"Trebuchet MS",sans-serif;font-size:13px;color:var(--gray)}
+.scope[hidden]{display:none}
+.seg.sm button{min-width:0;padding:5px 12px;flex-direction:row}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+/* form fields */
+.fields{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}
+.f{display:flex;flex-direction:column;gap:6px}
+.f.full{grid-column:1/-1}
+.f label,.f .lab{font-size:14px;font-weight:600;color:var(--ink)}
+.f .hint{font-size:13px;color:var(--gray);font-weight:400}
+input[type=text],select,textarea{font-size:16px;padding:9px 11px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--ink);width:100%}
+textarea{min-height:84px;resize:vertical;font-family:Georgia,serif}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:18px;padding:5px 12px;font-size:14px;font-weight:400;cursor:pointer;background:var(--surface)}
+.chips label:has(input:checked){border-color:var(--teal);background:color-mix(in srgb,var(--teal) 14%,var(--surface));color:var(--ink)}
+.chips input{accent-color:var(--teal);margin:0}
+/* submit */
+.submit{background:var(--surface);border:2px solid var(--teal);border-radius:10px;padding:24px}
+.submit h2{margin:0 0 6px;color:var(--navy);font-size:22px}
+.submit p{margin:0 0 14px;color:var(--gray);font-size:15px}
+.primary{background:var(--navy);color:var(--surface);border:0;border-radius:8px;padding:12px 20px;font-size:16px;font-weight:600;cursor:pointer}
+:root[data-theme="dark"] .primary{color:#0e1a26}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .primary{color:#0e1a26}}
+.primary:disabled{opacity:.5;cursor:default}
+.secondary{background:none;border:1px solid var(--navy);color:var(--navy);border-radius:8px;padding:11px 16px;font-size:15px;cursor:pointer}
+.btnrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.status{margin-top:12px;font-family:"Trebuchet MS",sans-serif;font-size:15px}
+.status.ok{color:var(--green)}.status.err{color:#b4462d}
+.fallback{display:none;margin-top:16px}
+.fallback textarea{min-height:140px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px}
+.privacy{font-size:14px;color:var(--gray);border-left:3px solid var(--teal);padding:4px 0 4px 12px;margin:16px 0 0}
+footer{margin-top:40px;font-size:13px;color:var(--gray);font-family:"Trebuchet MS",sans-serif;border-top:1px solid var(--line);padding-top:14px}
+/* results */
+#results{display:none}
+#results table{width:100%;border-collapse:collapse;font-size:14px;font-family:"Trebuchet MS",sans-serif}
+#results th{background:var(--navy);color:var(--surface);text-align:left;padding:8px 10px;font-weight:600;position:sticky;top:0}
+:root[data-theme="dark"] #results th{color:#0e1a26}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #results th{color:#0e1a26}}
+#results td{padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+#results tr.grp td{background:var(--tint);font-weight:700;color:var(--navy)}
+.scroll{overflow-x:auto;max-height:70vh;overflow-y:auto;border:1px solid var(--line);border-radius:8px}
+.stack{display:flex;height:12px;width:160px;border-radius:3px;overflow:hidden;background:var(--line)}
+.stack i{display:block;height:100%}
+.s3{background:var(--navy)}.s2{background:var(--teal)}.s1{background:var(--blue);opacity:.55}
+.resgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.card b{font-size:28px;color:var(--navy);font-family:"Trebuchet MS",sans-serif;display:block}
+.card span{font-size:13px;color:var(--gray);font-family:"Trebuchet MS",sans-serif}
+@media (max-width:860px){
+  .layout{grid-template-columns:1fr;gap:0}
+  .rail{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;margin:0 -20px 14px;padding-left:20px;padding-right:20px;border-bottom:1px solid var(--line)}
+  body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+  .rail ol{display:none}
+  .rail .total{margin-top:0}
+  .item{grid-template-columns:1fr;padding:14px 16px}
+  .ctl{flex-wrap:wrap}
+  .scope{grid-column:1;justify-self:stretch;flex-wrap:wrap}
+  .seg button{min-width:0;flex:1;padding:7px 6px}
+  .seg{width:100%}
+  .fields{grid-template-columns:1fr;padding:18px 16px}
+  .sechead{padding:18px 16px 12px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand" aria-label="Zingerworks">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M7 8 H31 L8 32 H32" fill="none" stroke="#4a5a72" stroke-width="2.2"/><circle cx="7" cy="8" r="5" fill="#3881c3"/><circle cx="31" cy="8" r="4.2" fill="#309795"/><circle cx="19.5" cy="20" r="2.4" fill="#2c5283"/><circle cx="8" cy="32" r="4.2" fill="#2c5283"/><circle cx="32" cy="32" r="4.6" fill="#27674a"/></svg>
+      zingerworks
+    </div>
+  </header>
+
+  <div id="surveyView">
+  <div class="hero">
+    <h1>What is your firm actually doing with AI?</h1>
+    <p>Before we meet as the AEC AI Roundtable, I’d like a quick picture of where each of us is. The list is grouped by type of work, starting with everyday chat use and ending with custom tools and firm data. For anything you’re using, you’ll also say how widely: just you, your team, or the whole firm. Most firms will be early on most of it, and that’s the point: it shows us where to start the conversation.</p>
+    <p class="meta">About 15 minutes. Your answers save as a draft in this browser, and you can come back to update them.</p>
+    <div class="legend ui" aria-label="Rating scale">
+      <span><span class="dots"><i></i><i></i><i></i></span>Not yet</span>
+      <span><span class="dots"><i class="on"></i><i></i><i></i></span>Exploring: trying it informally</span>
+      <span><span class="dots"><i class="on"></i><i class="on"></i><i></i></span>Piloting: deliberate test on real work</span>
+      <span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span>Regular use</span>
+      <span>✓ Want to learn: you’d like to hear how others do it</span>
+    </div>
+  </div>
+
+  <div class="layout">
+    <nav class="rail" aria-label="Survey sections">
+      <ol id="railList"></ol>
+      <div class="total"><span id="totalText">0 of 0 rated</span><div class="bar"><i id="totalBar"></i></div></div>
+    </nav>
+    <main id="main"></main>
+  </div>
+  </div>
+
+  <footer>Carl Springer, Zingerworks  |  carl.springer@zingerworks.com  |  zingerworks.com</footer>
+</div>
+
+<script>
+const LEVELS=["Not yet","Exploring","Piloting","Regular use"];
+const GOV=["Not yet","Discussing","Drafting","In place"];
+const SCOPES=["Just me","My team","Firm-wide"];
+const SECTIONS=[
+ {id:"s1",lvl:"",title:"Everyday writing and research",desc:"Individual use of a general chat assistant (ChatGPT, Claude, Copilot, Gemini) for routine work.",items:[
+  ["Drafting and polishing emails","Replies, follow-ups, tricky messages"],
+  ["Summarizing long emails or threads","Catching up after time away"],
+  ["Rewriting for tone or a nontechnical audience","Explaining a design decision to a client or council"],
+  ["Proofreading and grammar checks",""],
+  ["Brainstorming ideas and approaches","Alternatives, names, outlines"],
+  ["Quick research on unfamiliar topics","Getting up to speed on a method, product, or regulation"],
+  ["Translating text","For staff, clients, or public outreach"],
+  ["Writing or fixing Excel formulas","Lookups, cleanup, pivot logic"],
+  ["Preparing meeting agendas",""],
+  ["AI meeting transcription and notes","Otter, Teams, Zoom, Granola, Fireflies"],
+  ["Summarizing articles, webinars, or industry news",""],
+  ["Drafting social posts or newsletter items","LinkedIn, firm newsletter"],
+  ["Using AI as a tutor for software or skills","Learning a new tool, function, or concept"]]},
+ {id:"s2",lvl:"",title:"Business development and proposals",desc:"Pursuits, marketing, and winning work.",items:[
+  ["Analyzing RFPs and RFQs","Scope, deadlines, evaluation criteria, submission rules"],
+  ["Building proposal compliance checklists",""],
+  ["Go/no-go analysis support","Fit, risk, and competition"],
+  ["Drafting proposal sections","Project understanding, approach, schedule narrative"],
+  ["Tailoring resumes and project descriptions","To a specific pursuit"],
+  ["Finding reusable content in past proposals",""],
+  ["Researching clients, agencies, and competitors","Before a pursuit or interview"],
+  ["Interview prep and mock interview questions",""],
+  ["Win/loss and debrief analysis",""],
+  ["Marketing content","Website copy, case studies, award submittals"],
+  ["Generating images or graphics for marketing","Midjourney, DALL·E, Firefly, Canva AI"]]},
+ {id:"s3",lvl:"",title:"Project documents and communication",desc:"Reading, writing, and organizing the documents that run a project.",items:[
+  ["Summarizing contracts, scopes, and addenda",""],
+  ["Contract risk review","Indemnification, insurance, standard of care, scope gaps"],
+  ["Drafting scopes of work and fee narratives",""],
+  ["Meeting minutes and action item logs",""],
+  ["Client progress reports and status updates",""],
+  ["Responding to agency or reviewer comments","Comment-response matrices, resubmittal letters"],
+  ["Drafting RFIs or RFI responses",""],
+  ["Submittal review support",""],
+  ["Reviewing specifications and special provisions",""],
+  ["Drafting technical memos and reports",""],
+  ["Editing reports against firm style guidelines","Consistency across authors"],
+  ["Summarizing codes, standards, and design manuals",""],
+  ["Code and regulation research","Across jurisdictions"],
+  ["Extracting data from PDFs into tables","Boring logs, test results, schedules, quantities"],
+  ["Due diligence document review","Title reports, easements, CC&Rs, conditions of approval"],
+  ["Change order and claims documentation support",""],
+  ["Plain-language public materials","FAQs, fact sheets, project summaries"],
+  ["Categorizing and summarizing public comments",""],
+  ["Environmental document support","NEPA, SEPA, CEQA sections and scoping"]]},
+ {id:"s4",lvl:"",title:"Technical analysis and QA",desc:"Using AI to check, analyze, and calculate, with an engineer verifying the result.",items:[
+  ["First-pass QA/QC of plan sets","Missing labels, sheet-to-sheet mismatches"],
+  ["Spec-to-plan cross-checks","Plans, special provisions, and bid items"],
+  ["Checking calculations or spreadsheets",""],
+  ["Comparing drawing or document revisions",""],
+  ["Turning agency comment history into checklists","Pre-submittal checklists by agency"],
+  ["Permit application pre-screening","CivCheck, Archistar, InspectMind, or general AI"],
+  ["Analyzing project data and making charts","Traffic counts, test results, survey data"],
+  ["Writing Python, R, or SQL for analysis",""],
+  ["Writing CAD/BIM scripts and macros","Dynamo, Grasshopper, AutoLISP, Civil 3D or Revit API"],
+  ["AI-assisted GIS work","ArcGIS AI assistants, spatial analysis scripts"],
+  ["Quantity takeoff and cost estimating support",""],
+  ["Schedule development or review",""],
+  ["Site feasibility and zoning analysis",""],
+  ["Field reports from photos, voice, or notes","Inspection reports, daily logs"],
+  ["Analyzing site photos or drone imagery","Pavement distress, defects, existing conditions"]]},
+ {id:"s5",lvl:"",title:"AI inside design and delivery software",desc:"AI features in the specialized tools your teams already use or are evaluating.",items:[
+  ["AI rendering and visualization","Veras, Enscape AI, D5, Stable Diffusion"],
+  ["Generative massing or layout options","TestFit, Forma, Archistar"],
+  ["Grading and earthwork optimization","Civil 3D Grading Optimization, Allsite"],
+  ["Site, utility, or roadway layout tools","Allsite and similar"],
+  ["Stormwater or hydraulic modeling with AI","InfoDrainage, GeoSTORM"],
+  ["Point cloud and LiDAR classification","ReCap, Pix4D, DroneDeploy"],
+  ["Energy, daylight, or performance analysis",""],
+  ["Transportation analysis tools with AI","Video analytics, signal timing, safety analysis"],
+  ["Built-in AI in Autodesk, Bentley, or Bluebeam",""],
+  ["Construction platform AI","Procore, Autodesk Construction Cloud: RFI routing, submittals"],
+  ["Purpose-built AEC proposal tools","Joist, Shred, QorusDocs"]]},
+ {id:"s6",lvl:"",title:"Custom tools and automation",desc:"Packaging AI so it repeats a task well, connects to your systems, or runs on its own.",items:[
+  ["Shared prompt library for staff",""],
+  ["Custom GPTs, Claude Projects, or Gemini Gems","Set up for a specific recurring task"],
+  ["AI assistant loaded with firm standards","Design manuals, QA checklists, writing guidelines"],
+  ["AI connected to email, calendar, or files","Connectors to Outlook, Google Drive, SharePoint"],
+  ["Microsoft 365 Copilot across Office apps","Outlook, Teams, Word, SharePoint"],
+  ["No-code automations with AI steps","Power Automate, Zapier, Make"],
+  ["Agents that complete multi-step tasks","Browser agents, Claude Cowork or Code, Copilot agents"],
+  ["AI-built internal apps or dashboards","Small tools staff built with AI help"],
+  ["Intranet chatbot for policy, HR, or IT questions",""],
+  ["Searchable knowledge base of past projects","Retrieval over project files and lessons learned"],
+  ["Proposal and resume database with AI search",""],
+  ["Automated market or industry monitoring","Digests from periodicals, agency boards, bid sites"]]},
+ {id:"s7",lvl:"",title:"Firm data, machine learning, and strategy",desc:"Enterprise platforms, firm data, and AI as part of the business model.",items:[
+  ["Firm-wide enterprise AI platform","Admin controls, approved for client data"],
+  ["AI connected to ERP or project accounting","Deltek Vantagepoint, Ajera, BST"],
+  ["Project risk or performance prediction","From historical project data"],
+  ["Resource and staffing forecasting",""],
+  ["Machine learning models trained on firm data",""],
+  ["Fine-tuned or privately hosted models",""],
+  ["Custom API integrations or an internal AI platform",""],
+  ["AI-enabled services or products sold to clients",""],
+  ["Advising clients or agencies on AI adoption",""]]},
+ {id:"gov",lvl:"Firm practices",title:"Policy, training, and governance",desc:"How your firm manages AI use. Rated by status rather than adoption.",scale:GOV,items:[
+  ["Written AI use policy",""],
+  ["Approved tools list",""],
+  ["Rules for client and project data in AI tools",""],
+  ["Disclosing AI use to clients",""],
+  ["AI language in contracts",""],
+  ["Staff AI training program",""],
+  ["AI champions or working group",""],
+  ["Leadership-sponsored AI strategy or roadmap",""],
+  ["Tracking time savings or ROI",""],
+  ["Dedicated budget for AI tools",""],
+  ["Tracking client or agency AI requirements","Approved tools, disclosure rules"]]}
+];
+SECTIONS.forEach(s=>s.items=s.items.map((it,i)=>({id:s.id+"_"+(i+1),label:it[0],ex:it[1]})));
+const ALL=SECTIONS.flatMap(s=>s.items.map(it=>({...it,sec:s})));
+const SIZES=["1 to 10","11 to 50","51 to 200","201 to 1,000","More than 1,000"];
+const PRACTICES=["Civil / site","Transportation","Structural","Architecture","Landscape architecture","Planning","Environmental","Geotechnical","Survey","Water / wastewater","MEP","Construction","Public involvement","Other"];
+const TOOLS=["ChatGPT","Claude","Microsoft Copilot (free/web)","Microsoft 365 Copilot","Google Gemini","NotebookLM","Perplexity","Grammarly","Image generators","Autodesk AI features","Bluebeam","Procore AI","Purpose-built AEC tools","Other"];
+const OPEN=[["win","What’s your biggest AI win so far?","Something that saved real time or improved quality."],["pain","What’s getting in the way?","Policy, cost, trust, data, time to learn, leadership support..."],["learn","What would you most like to learn from this group?",""],["other","Anything you’re doing that isn’t on this list?",""]];
+
+let state={name:"",firm:"",role:"",size:"",practices:[],tools:[],toolsOther:"",items:{},open:{},demo:""};
+const DRAFT_KEY="aecai-inventory-draft-v1";
+try{const d=localStorage.getItem(DRAFT_KEY);if(d)state=Object.assign(state,JSON.parse(d));}catch(e){}
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dots=n=>'<span class="dots" aria-hidden="true">'+[1,2,3].map(k=>`<i class="${k<=n?'on':''}"></i>`).join("")+'</span>';
+
+function render(){
+  const m=document.getElementById("main");
+  let h=`<section class="sec" id="about"><div class="sechead"><div><div class="lvl">Start here</div><h2>About you and your firm</h2><p>Only Carl sees your name and firm.</p></div></div><div class="fields">
+   <div class="f"><label for="f_name">Your name</label><input type="text" id="f_name" data-k="name" autocomplete="name"></div>
+   <div class="f"><label for="f_firm">Firm</label><input type="text" id="f_firm" data-k="firm" autocomplete="organization"></div>
+   <div class="f"><label for="f_role">Role or title</label><input type="text" id="f_role" data-k="role"></div>
+   <div class="f"><label for="f_size">Firm size (staff)</label><select id="f_size" data-k="size"><option value="">Choose one</option>${SIZES.map(s=>`<option>${s}</option>`).join("")}</select></div>
+   <div class="f full"><span class="lab">Your firm’s main practice areas</span><div class="chips">${PRACTICES.map(p=>`<label><input type="checkbox" data-arr="practices" value="${esc(p)}">${esc(p)}</label>`).join("")}</div></div>
+   <div class="f full"><span class="lab">AI tools in use at your firm <span class="hint">(by anyone, officially or not)</span></span><div class="chips">${TOOLS.map(p=>`<label><input type="checkbox" data-arr="tools" value="${esc(p)}">${esc(p)}</label>`).join("")}</div></div>
+   <div class="f full"><label for="f_to">Other or purpose-built tools you use</label><input type="text" id="f_to" data-k="toolsOther" placeholder="For example: Joist, CivCheck, Allsite"></div>
+  </div></section>`;
+  SECTIONS.forEach(s=>{
+    const sc=s.scale||LEVELS;
+    h+=`<section class="sec" id="${s.id}"><div class="sechead"><div>${s.lvl?`<div class="lvl">${esc(s.lvl)}</div>`:""}<h2>${esc(s.title)}</h2><p>${esc(s.desc)}</p></div><button class="fillbtn" type="button" data-fill="${s.id}">Mark the rest “${sc[0]}”</button></div>`;
+    s.items.forEach(it=>{
+      h+=`<div class="item" data-item="${it.id}"><div class="it"><b id="lb_${it.id}">${esc(it.label)}</b>${it.ex?`<span>${esc(it.ex)}</span>`:""}</div><div class="ctl"><div class="seg" role="group" aria-labelledby="lb_${it.id}">${sc.map((l,n)=>`<button type="button" data-id="${it.id}" data-v="${n}" aria-pressed="false">${dots(n)}${esc(l)}</button>`).join("")}</div><label class="learn"><input type="checkbox" data-learn="${it.id}">Want to learn</label></div>${s.scale?"":`<div class="scope" id="sc_${it.id}" hidden><span>Who uses it?</span><div class="seg sm" role="group" aria-label="Who uses: ${esc(it.label)}">${SCOPES.map((l,n)=>`<button type="button" data-scope="${it.id}" data-w="${n}" aria-pressed="false">${esc(l)}</button>`).join("")}</div></div>`}</div>`;
+    });
+    h+=`</section>`;
+  });
+  h+=`<section class="sec" id="wrap"><div class="sechead"><div><div class="lvl">Wrap-up</div><h2>In your own words</h2><p>Short answers are fine. These shape the first meetings.</p></div></div><div class="fields">
+   ${OPEN.map(o=>`<div class="f full"><label for="o_${o[0]}">${esc(o[1])}${o[2]?` <span class="hint">${esc(o[2])}</span>`:""}</label><textarea id="o_${o[0]}" data-open="${o[0]}"></textarea></div>`).join("")}
+   <div class="f full"><span class="lab">Would you be willing to show the group something you’ve built or tried?</span><div class="chips">${["Yes","Maybe later","Not right now"].map(v=>`<label><input type="radio" name="demo" data-k="demo" value="${v}">${v}</label>`).join("")}</div></div>
+  </div></section>
+  <div class="submit" id="send"><h2>Send your answers to Carl</h2><p>You can come back and resend if anything changes. Your latest version replaces the earlier one.</p>
+   <div class="btnrow"><button class="primary" id="saveBtn" type="button">Send to Carl</button><span class="ui" id="countNote" style="color:var(--gray);font-size:14px"></span></div>
+   <div class="status" id="status" role="status" aria-live="polite"></div>
+   <div class="fallback" id="fallback"><p>Your answers couldn’t be sent from this page. Copy them and email them to <b>carl.springer@zingerworks.com</b>.</p>
+    <div class="btnrow"><button class="secondary" id="copyBtn" type="button">Copy my answers</button></div>
+    <textarea id="fbText" readonly aria-label="Your answers as text" style="margin-top:12px"></textarea></div>
+   <p class="privacy">Answers go to a private spreadsheet that only Carl Springer can see. Anything shared at the roundtable will be summarized without names or firms.</p>
+  </div>`;
+  m.innerHTML=h;
+  // rail
+  const rails=[{id:"about",t:"About you",s:""},...SECTIONS.map(s=>({id:s.id,t:s.title,s:s.lvl})),{id:"wrap",t:"Wrap-up",s:""}];
+  document.getElementById("railList").innerHTML=rails.map(r=>`<li><a href="#${r.id}"><span class="node" id="nd_${r.id}"></span><span class="rl">${r.s?`<small>${esc(r.s)}</small>`:""}<b>${esc(r.t)}</b></span></a></li>`).join("");
+  hydrate();
+}
+function hydrate(){
+  document.querySelectorAll("[data-k]").forEach(el=>{
+    if(el.type==="radio")el.checked=state[el.dataset.k]===el.value;else el.value=state[el.dataset.k]||"";
+  });
+  document.querySelectorAll("[data-arr]").forEach(el=>el.checked=(state[el.dataset.arr]||[]).includes(el.value));
+  document.querySelectorAll("[data-open]").forEach(el=>el.value=(state.open||{})[el.dataset.open]||"");
+  document.querySelectorAll(".seg button[data-v]").forEach(b=>{const r=state.items[b.dataset.id];b.setAttribute("aria-pressed",r&&r.s===+b.dataset.v?"true":"false")});
+  document.querySelectorAll("[data-scope]").forEach(b=>{const r=state.items[b.dataset.scope];b.setAttribute("aria-pressed",r&&r.w===+b.dataset.w?"true":"false")});
+  ALL.forEach(it=>syncScope(it.id));
+  document.querySelectorAll("[data-learn]").forEach(el=>{const r=state.items[el.dataset.learn];el.checked=!!(r&&r.l)});
+  progress();
+}
+function syncScope(id){const el=document.getElementById("sc_"+id);if(!el)return;const r=state.items[id];el.hidden=!(r&&r.s>=1);}
+let draftT;
+function saveDraft(){clearTimeout(draftT);draftT=setTimeout(()=>{try{localStorage.setItem(DRAFT_KEY,JSON.stringify(state))}catch(e){}},300);}
+function progress(){
+  let rated=0;
+  SECTIONS.forEach(s=>{const n=s.items.filter(it=>state.items[it.id]&&state.items[it.id].s!=null).length;rated+=n;
+    const nd=document.getElementById("nd_"+s.id);if(nd)nd.className="node"+(n===s.items.length?" done":n?" part":"");});
+  const ab=document.getElementById("nd_about");if(ab){const k=[state.name,state.firm,state.size].filter(Boolean).length;ab.className="node"+(k===3?" done":k?" part":"");}
+  const wr=document.getElementById("nd_wrap");if(wr){const k=Object.values(state.open||{}).filter(v=>v&&v.trim()).length+(state.demo?1:0);wr.className="node"+(k>=3?" done":k?" part":"");}
+  document.getElementById("totalText").textContent=`${rated} of ${ALL.length} rated`;
+  document.getElementById("totalBar").style.width=(100*rated/ALL.length)+"%";
+  const cn=document.getElementById("countNote");if(cn)cn.textContent=rated<ALL.length?`${ALL.length-rated} activities unrated. That’s fine; send whenever you’re ready.`:"Everything rated. Thank you.";
+}
+document.addEventListener("click",e=>{
+  const sb=e.target.closest("[data-scope]");
+  if(sb){const id=sb.dataset.scope,w=+sb.dataset.w;const cur=state.items[id]||{};
+    if(cur.w===w)delete cur.w;else cur.w=w;state.items[id]=cur;
+    sb.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",cur.w===+x.dataset.w?"true":"false"));
+    saveDraft();return;}
+  const b=e.target.closest(".seg button[data-v]");
+  if(b){const id=b.dataset.id,v=+b.dataset.v;const cur=state.items[id]||{};
+    if(cur.s===v){delete cur.s}else cur.s=v;
+    if(!(cur.s>=1))delete cur.w;
+    if(cur.s==null&&!cur.l)delete state.items[id];else state.items[id]=cur;
+    b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",cur.s===+x.dataset.v?"true":"false"));
+    if(!(cur.s>=1)){const sc=document.getElementById("sc_"+id);if(sc)sc.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"))}
+    syncScope(id);progress();saveDraft();return;}
+  const f=e.target.closest("[data-fill]");
+  if(f){const s=SECTIONS.find(x=>x.id===f.dataset.fill);s.items.forEach(it=>{const c=state.items[it.id]||{};if(c.s==null){c.s=0;state.items[it.id]=c}});hydrate();saveDraft();}
+});
+document.addEventListener("input",e=>{
+  const t=e.target;
+  if(t.dataset.k){if(t.type!=="radio"||t.checked)state[t.dataset.k]=t.value}
+  else if(t.dataset.arr){const a=new Set(state[t.dataset.arr]||[]);t.checked?a.add(t.value):a.delete(t.value);state[t.dataset.arr]=[...a]}
+  else if(t.dataset.open){state.open=state.open||{};state.open[t.dataset.open]=t.value}
+  else if(t.dataset.learn){const id=t.dataset.learn;const c=state.items[id]||{};c.l=t.checked;if(!c.l)delete c.l;if(c.s==null&&!c.l)delete state.items[id];else state.items[id]=c}
+  else return;
+  progress();saveDraft();
+});
+document.addEventListener("change",e=>{if(e.target.type==="radio"||e.target.type==="checkbox"||e.target.tagName==="SELECT")e.target.dispatchEvent(new Event("input",{bubbles:true}))},true);
+
+function asText(){
+  const L=[];L.push("AEC AI Roundtable: AI Activity Inventory");
+  L.push(`Name: ${state.name}`,`Firm: ${state.firm}`,`Role: ${state.role}`,`Firm size: ${state.size}`,`Practice areas: ${(state.practices||[]).join(", ")}`,`Tools: ${(state.tools||[]).join(", ")}${state.toolsOther?"; "+state.toolsOther:""}`,"");
+  SECTIONS.forEach(s=>{const sc=s.scale||LEVELS;L.push(s.title);s.items.forEach(it=>{const r=state.items[it.id]||{};L.push(`  ${it.label}: ${r.s!=null?sc[r.s]:"(not rated)"}${r.w!=null?" ("+SCOPES[r.w]+")":""}${r.l?" [want to learn]":""}`)});L.push("")});
+  OPEN.forEach(o=>L.push(o[1],"  "+(((state.open||{})[o[0]])||""),""));
+  L.push(`Willing to demo: ${state.demo||""}`);
+  return L.join("\n");
+}
+function showFallback(){
+  document.getElementById("fallback").style.display="block";
+  document.getElementById("fbText").value=asText();
+}
+document.addEventListener("click",async e=>{
+  if(e.target.id==="copyBtn"){const ta=document.getElementById("fbText");ta.value=asText();
+    try{await navigator.clipboard.writeText(ta.value);setStatus("Copied. Paste it into an email to Carl.","ok")}catch(err){ta.focus();ta.select();setStatus("Select all in the box below and copy it.","")}}
+});
+function setStatus(t,c){const s=document.getElementById("status");s.textContent=t;s.className="status "+(c||"")}
+
+render();
+
+/* ---------- sending answers to Carl's Google Sheet ---------- */
+// Paste the Google Apps Script web app URL between the quotes:
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbzXlbX2Aj8_hK06D2y6XDZoUlj1WvsJJV8STCwuEzZvt7OdCYVm_ZKMV_4IkclCV1Mf0A/exec";
+const RID_KEY="aecai-inventory-rid", SENT_KEY="aecai-inventory-sent";
+const newId=()=>(window.crypto&&crypto.randomUUID)?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+let rid;
+try{rid=localStorage.getItem(RID_KEY);if(!rid){rid=newId();localStorage.setItem(RID_KEY,rid)}}catch(e){rid=newId()}
+try{if(localStorage.getItem(SENT_KEY))setStatus("You’ve sent answers before. Sending again replaces them.","")}catch(e){}
+
+function toRow(){
+  const r={"Respondent ID":rid,"Name":state.name,"Firm":state.firm,"Role":state.role,"Firm size":state.size,
+    "Practice areas":(state.practices||[]).join("; "),"Tools":(state.tools||[]).join("; "),"Other tools":state.toolsOther};
+  ALL.forEach(it=>{const x=state.items[it.id]||{};r[`${it.sec.title} | ${it.label}`]=x.s!=null?(it.sec.scale||LEVELS)[x.s]:""});
+  ALL.filter(it=>!it.sec.scale).forEach(it=>{const x=state.items[it.id]||{};r[`Scope | ${it.label}`]=x.w!=null&&x.s>=1?SCOPES[x.w]:""});
+  ALL.forEach(it=>{const x=state.items[it.id]||{};r[`Learn | ${it.label}`]=x.l?"Yes":""});
+  OPEN.forEach(o=>r[o[1]]=(state.open||{})[o[0]]||"");
+  r["Willing to demo"]=state.demo||"";
+  return r;
+}
+document.addEventListener("click",async e=>{
+  if(e.target.id!=="saveBtn")return;
+  const btn=e.target;
+  if(!state.name.trim()||!state.firm.trim()){setStatus("Add your name and firm at the top first.","err");document.getElementById(state.name.trim()?"f_firm":"f_name").focus();return;}
+  if(!/^https:\/\/script\.google\.com\//.test(SCRIPT_URL)){setStatus("Sending isn’t set up yet. Use the copy option below.","err");showFallback();return;}
+  btn.disabled=true;setStatus("Sending…","");
+  const row=toRow();
+  try{
+    const res=await fetch(SCRIPT_URL,{method:"POST",body:JSON.stringify({row,order:Object.keys(row)})});
+    const out=await res.json();
+    if(!out.ok)throw new Error(out.error||"not saved");
+    try{localStorage.setItem(SENT_KEY,new Date().toISOString())}catch(err){}
+    setStatus("Sent. Thank you! Come back anytime to update your answers.","ok");
+  }catch(err){
+    setStatus("Your answers didn’t go through. Try again, or use the copy option below.","err");showFallback();
+  }
+  btn.disabled=false;
+});
+</script>
+</body>
+</html>
