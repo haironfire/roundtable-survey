@@ -72,7 +72,7 @@ section.sec{background:var(--surface);border:1px solid var(--line);border-radius
 .it span{color:var(--gray);font-size:14px;line-height:1.4;display:block;margin-top:2px}
 .ctl{display:flex;align-items:center;gap:12px}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--surface)}
-.seg button{border:0;background:transparent;color:var(--gray);padding:7px 10px;font-size:13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:74px;border-right:1px solid var(--line)}
+.seg button{border:0;background:transparent;color:var(--gray);padding:8px 14px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;min-width:72px;border-right:1px solid var(--line)}
 .seg button:last-child{border-right:0}
 .seg button:hover{color:var(--navy);background:var(--soft)}
 .dots{display:flex;gap:3px;height:7px}
@@ -84,9 +84,6 @@ section.sec{background:var(--surface);border:1px solid var(--line);border-radius
 .learn{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--gray);cursor:pointer;white-space:nowrap;user-select:none}
 .learn input{accent-color:var(--learn);width:17px;height:17px;margin:0}
 .learn:has(input:checked){color:var(--learn);font-weight:600}
-.scope{grid-column:2;justify-self:end;display:flex;align-items:center;gap:10px;font-family:"Trebuchet MS",sans-serif;font-size:13px;color:var(--gray)}
-.scope[hidden]{display:none}
-.seg.sm button{min-width:0;padding:5px 12px;flex-direction:row}
 button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 /* form fields */
 .fields{padding:20px 24px;display:grid;grid-template-columns:1fr 1fr;gap:18px 22px}
@@ -140,7 +137,6 @@ footer{margin-top:40px;font-size:13px;color:var(--gray);font-family:"Trebuchet M
   .rail .total{margin-top:0}
   .item{grid-template-columns:1fr;padding:14px 16px}
   .ctl{flex-wrap:wrap}
-  .scope{grid-column:1;justify-self:stretch;flex-wrap:wrap}
   .seg button{min-width:0;flex:1;padding:7px 6px}
   .seg{width:100%}
   .fields{grid-template-columns:1fr;padding:18px 16px}
@@ -161,14 +157,12 @@ footer{margin-top:40px;font-size:13px;color:var(--gray);font-family:"Trebuchet M
   <div id="surveyView">
   <div class="hero">
     <h1>What is your firm actually doing with AI?</h1>
-    <p>Before we meet as the AEC AI Roundtable, I’d like a quick picture of where each of us is. The list is grouped by type of work, starting with everyday chat use and ending with custom tools and firm data. For anything you’re using, you’ll also say how widely: just you, your team, or the whole firm. Most firms will be early on most of it, and that’s the point: it shows us where to start the conversation.</p>
-    <p class="meta">About 15 minutes. Your answers save as a draft in this browser, and you can come back to update them.</p>
-    <div class="legend ui" aria-label="Rating scale">
-      <span><span class="dots"><i></i><i></i><i></i></span>Not yet</span>
-      <span><span class="dots"><i class="on"></i><i></i><i></i></span>Exploring: trying it informally</span>
-      <span><span class="dots"><i class="on"></i><i class="on"></i><i></i></span>Piloting: deliberate test on real work</span>
-      <span><span class="dots"><i class="on"></i><i class="on"></i><i class="on"></i></span>Regular use</span>
-      <span>✓ Want to learn: you’d like to hear how others do it</span>
+    <p>Before we meet as the AEC AI Roundtable, I’d like a quick picture of where each of us is. The list is grouped by type of work, starting with everyday chat use and ending with custom tools and firm data. Most firms will be early on most of it, and that’s the point: it shows us where to start the conversation.</p>
+    <p class="meta">About 10 minutes. One tap per activity. Your answers save as a draft in this browser, and you can come back to update them.</p>
+    <div class="legend ui" aria-label="Answer choices">
+      <span><b>No</b>: not something you or your firm do</span>
+      <span><b>Yes</b>: you or your firm do this</span>
+      <span><b>Want to learn</b>: not yet, but you’d like to hear how others do it</span>
     </div>
   </div>
 
@@ -185,9 +179,7 @@ footer{margin-top:40px;font-size:13px;color:var(--gray);font-family:"Trebuchet M
 </div>
 
 <script>
-const LEVELS=["Not yet","Exploring","Piloting","Regular use"];
-const GOV=["Not yet","Discussing","Drafting","In place"];
-const SCOPES=["Just me","My team","Firm-wide"];
+const LEVELS=["No","Yes","Want to learn"];
 const SECTIONS=[
  {id:"s1",lvl:"",title:"Everyday writing and research",desc:"Individual use of a general chat assistant (ChatGPT, Claude, Copilot, Gemini) for routine work.",items:[
   ["Drafting and polishing emails","Replies, follow-ups, tricky messages"],
@@ -286,7 +278,7 @@ const SECTIONS=[
   ["Custom API integrations or an internal AI platform",""],
   ["AI-enabled services or products sold to clients",""],
   ["Advising clients or agencies on AI adoption",""]]},
- {id:"gov",lvl:"Firm practices",title:"Policy, training, and governance",desc:"How your firm manages AI use. Rated by status rather than adoption.",scale:GOV,items:[
+ {id:"gov",lvl:"Firm practices",title:"Policy, training, and governance",desc:"How your firm manages AI use. Yes means it’s in place.",items:[
   ["Written AI use policy",""],
   ["Approved tools list",""],
   ["Rules for client and project data in AI tools",""],
@@ -307,7 +299,7 @@ const TOOLS=["ChatGPT","Claude","Microsoft Copilot (free/web)","Microsoft 365 Co
 const OPEN=[["win","What’s your biggest AI win so far?","Something that saved real time or improved quality."],["pain","What’s getting in the way?","Policy, cost, trust, data, time to learn, leadership support..."],["learn","What would you most like to learn from this group?",""],["other","Anything you’re doing that isn’t on this list?",""]];
 
 let state={name:"",firm:"",role:"",size:"",practices:[],tools:[],toolsOther:"",items:{},open:{},demo:""};
-const DRAFT_KEY="aecai-inventory-draft-v1";
+const DRAFT_KEY="aecai-inventory-draft-v2";
 try{const d=localStorage.getItem(DRAFT_KEY);if(d)state=Object.assign(state,JSON.parse(d));}catch(e){}
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dots=n=>'<span class="dots" aria-hidden="true">'+[1,2,3].map(k=>`<i class="${k<=n?'on':''}"></i>`).join("")+'</span>';
@@ -327,7 +319,7 @@ function render(){
     const sc=s.scale||LEVELS;
     h+=`<section class="sec" id="${s.id}"><div class="sechead"><div>${s.lvl?`<div class="lvl">${esc(s.lvl)}</div>`:""}<h2>${esc(s.title)}</h2><p>${esc(s.desc)}</p></div><button class="fillbtn" type="button" data-fill="${s.id}">Mark the rest “${sc[0]}”</button></div>`;
     s.items.forEach(it=>{
-      h+=`<div class="item" data-item="${it.id}"><div class="it"><b id="lb_${it.id}">${esc(it.label)}</b>${it.ex?`<span>${esc(it.ex)}</span>`:""}</div><div class="ctl"><div class="seg" role="group" aria-labelledby="lb_${it.id}">${sc.map((l,n)=>`<button type="button" data-id="${it.id}" data-v="${n}" aria-pressed="false">${dots(n)}${esc(l)}</button>`).join("")}</div><label class="learn"><input type="checkbox" data-learn="${it.id}">Want to learn</label></div>${s.scale?"":`<div class="scope" id="sc_${it.id}" hidden><span>Who uses it?</span><div class="seg sm" role="group" aria-label="Who uses: ${esc(it.label)}">${SCOPES.map((l,n)=>`<button type="button" data-scope="${it.id}" data-w="${n}" aria-pressed="false">${esc(l)}</button>`).join("")}</div></div>`}</div>`;
+      h+=`<div class="item" data-item="${it.id}"><div class="it"><b id="lb_${it.id}">${esc(it.label)}</b>${it.ex?`<span>${esc(it.ex)}</span>`:""}</div><div class="ctl"><div class="seg" role="group" aria-labelledby="lb_${it.id}">${sc.map((l,n)=>`<button type="button" data-id="${it.id}" data-v="${n}" aria-pressed="false">${esc(l)}</button>`).join("")}</div></div></div>`;
     });
     h+=`</section>`;
   });
@@ -356,12 +348,8 @@ function hydrate(){
   document.querySelectorAll("[data-arr]").forEach(el=>el.checked=(state[el.dataset.arr]||[]).includes(el.value));
   document.querySelectorAll("[data-open]").forEach(el=>el.value=(state.open||{})[el.dataset.open]||"");
   document.querySelectorAll(".seg button[data-v]").forEach(b=>{const r=state.items[b.dataset.id];b.setAttribute("aria-pressed",r&&r.s===+b.dataset.v?"true":"false")});
-  document.querySelectorAll("[data-scope]").forEach(b=>{const r=state.items[b.dataset.scope];b.setAttribute("aria-pressed",r&&r.w===+b.dataset.w?"true":"false")});
-  ALL.forEach(it=>syncScope(it.id));
-  document.querySelectorAll("[data-learn]").forEach(el=>{const r=state.items[el.dataset.learn];el.checked=!!(r&&r.l)});
   progress();
 }
-function syncScope(id){const el=document.getElementById("sc_"+id);if(!el)return;const r=state.items[id];el.hidden=!(r&&r.s>=1);}
 let draftT;
 function saveDraft(){clearTimeout(draftT);draftT=setTimeout(()=>{try{localStorage.setItem(DRAFT_KEY,JSON.stringify(state))}catch(e){}},300);}
 function progress(){
@@ -370,24 +358,17 @@ function progress(){
     const nd=document.getElementById("nd_"+s.id);if(nd)nd.className="node"+(n===s.items.length?" done":n?" part":"");});
   const ab=document.getElementById("nd_about");if(ab){const k=[state.name,state.firm,state.size].filter(Boolean).length;ab.className="node"+(k===3?" done":k?" part":"");}
   const wr=document.getElementById("nd_wrap");if(wr){const k=Object.values(state.open||{}).filter(v=>v&&v.trim()).length+(state.demo?1:0);wr.className="node"+(k>=3?" done":k?" part":"");}
-  document.getElementById("totalText").textContent=`${rated} of ${ALL.length} rated`;
+  document.getElementById("totalText").textContent=`${rated} of ${ALL.length} answered`;
   document.getElementById("totalBar").style.width=(100*rated/ALL.length)+"%";
-  const cn=document.getElementById("countNote");if(cn)cn.textContent=rated<ALL.length?`${ALL.length-rated} activities unrated. That’s fine; send whenever you’re ready.`:"Everything rated. Thank you.";
+  const cn=document.getElementById("countNote");if(cn)cn.textContent=rated<ALL.length?`${ALL.length-rated} activities unanswered. That’s fine; send whenever you’re ready.`:"Everything rated. Thank you.";
 }
 document.addEventListener("click",e=>{
-  const sb=e.target.closest("[data-scope]");
-  if(sb){const id=sb.dataset.scope,w=+sb.dataset.w;const cur=state.items[id]||{};
-    if(cur.w===w)delete cur.w;else cur.w=w;state.items[id]=cur;
-    sb.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",cur.w===+x.dataset.w?"true":"false"));
-    saveDraft();return;}
   const b=e.target.closest(".seg button[data-v]");
   if(b){const id=b.dataset.id,v=+b.dataset.v;const cur=state.items[id]||{};
     if(cur.s===v){delete cur.s}else cur.s=v;
-    if(!(cur.s>=1))delete cur.w;
-    if(cur.s==null&&!cur.l)delete state.items[id];else state.items[id]=cur;
+    if(cur.s==null)delete state.items[id];else state.items[id]=cur;
     b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",cur.s===+x.dataset.v?"true":"false"));
-    if(!(cur.s>=1)){const sc=document.getElementById("sc_"+id);if(sc)sc.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed","false"))}
-    syncScope(id);progress();saveDraft();return;}
+    progress();saveDraft();return;}
   const f=e.target.closest("[data-fill]");
   if(f){const s=SECTIONS.find(x=>x.id===f.dataset.fill);s.items.forEach(it=>{const c=state.items[it.id]||{};if(c.s==null){c.s=0;state.items[it.id]=c}});hydrate();saveDraft();}
 });
@@ -396,7 +377,6 @@ document.addEventListener("input",e=>{
   if(t.dataset.k){if(t.type!=="radio"||t.checked)state[t.dataset.k]=t.value}
   else if(t.dataset.arr){const a=new Set(state[t.dataset.arr]||[]);t.checked?a.add(t.value):a.delete(t.value);state[t.dataset.arr]=[...a]}
   else if(t.dataset.open){state.open=state.open||{};state.open[t.dataset.open]=t.value}
-  else if(t.dataset.learn){const id=t.dataset.learn;const c=state.items[id]||{};c.l=t.checked;if(!c.l)delete c.l;if(c.s==null&&!c.l)delete state.items[id];else state.items[id]=c}
   else return;
   progress();saveDraft();
 });
@@ -405,7 +385,7 @@ document.addEventListener("change",e=>{if(e.target.type==="radio"||e.target.type
 function asText(){
   const L=[];L.push("AEC AI Roundtable: AI Activity Inventory");
   L.push(`Name: ${state.name}`,`Firm: ${state.firm}`,`Role: ${state.role}`,`Firm size: ${state.size}`,`Practice areas: ${(state.practices||[]).join(", ")}`,`Tools: ${(state.tools||[]).join(", ")}${state.toolsOther?"; "+state.toolsOther:""}`,"");
-  SECTIONS.forEach(s=>{const sc=s.scale||LEVELS;L.push(s.title);s.items.forEach(it=>{const r=state.items[it.id]||{};L.push(`  ${it.label}: ${r.s!=null?sc[r.s]:"(not rated)"}${r.w!=null?" ("+SCOPES[r.w]+")":""}${r.l?" [want to learn]":""}`)});L.push("")});
+  SECTIONS.forEach(s=>{const sc=s.scale||LEVELS;L.push(s.title);s.items.forEach(it=>{const r=state.items[it.id]||{};L.push(`  ${it.label}: ${r.s!=null?sc[r.s]:"(not rated)"}`)});L.push("")});
   OPEN.forEach(o=>L.push(o[1],"  "+(((state.open||{})[o[0]])||""),""));
   L.push(`Willing to demo: ${state.demo||""}`);
   return L.join("\n");
@@ -435,8 +415,6 @@ function toRow(){
   const r={"Respondent ID":rid,"Name":state.name,"Firm":state.firm,"Role":state.role,"Firm size":state.size,
     "Practice areas":(state.practices||[]).join("; "),"Tools":(state.tools||[]).join("; "),"Other tools":state.toolsOther};
   ALL.forEach(it=>{const x=state.items[it.id]||{};r[`${it.sec.title} | ${it.label}`]=x.s!=null?(it.sec.scale||LEVELS)[x.s]:""});
-  ALL.filter(it=>!it.sec.scale).forEach(it=>{const x=state.items[it.id]||{};r[`Scope | ${it.label}`]=x.w!=null&&x.s>=1?SCOPES[x.w]:""});
-  ALL.forEach(it=>{const x=state.items[it.id]||{};r[`Learn | ${it.label}`]=x.l?"Yes":""});
   OPEN.forEach(o=>r[o[1]]=(state.open||{})[o[0]]||"");
   r["Willing to demo"]=state.demo||"";
   return r;
